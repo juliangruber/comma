@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+/**!
+  * Dependencies
+  */
+var parser  = require('..')
+  , net     = require('net')
+  , program = require('commander')
+  , pkg     = require('../package')
+  , fs      = require('fs')
+
+var file, stream, timer
+
+/**
+  * Logs an optiona message and exits with 
+  * an optional code defaulting to 0.
+  *
+  * @param {String} message (optional)
+  * @param {Number} code (optional) (Default 0)
+  */
+function die (message, code) {
+	message && console.log(message);
+	process.exit(0 || code)
+}
+
+
+/**
+  * Grabs a value exactly one offset
+  * from the raw arguments
+  *
+  * @param {String} arg
+  */
+function getArgValue (arg) {
+	var i 
+	return !!~(i = program.rawArgs.indexOf(arg))? program.rawArgs[i+1] : null
+}
+
+
+/**
+  * Takes a given ReadbleStream instance
+  * and creates a writeable stream with a
+  * provided file path and writes all read
+  * data to the file
+  *
+  * @param {ReadbleStream} stream
+  * @param {String} file
+  */
+function streamToFile (stream, file) {
+	var out = fs.createWriteStream(file)
+	stream.on('data', function (chunk) {
+		var buf
+		buf = (typeof chunk === 'object')? new Buffer(JSON.stringify(chunk)) 
+					: new Buffer(chunk.toString())
+		
+		out.write(buf);
+	});
+}
+
+// app version
+var VERSION = pkg.version
+
+// programm options
+program
+  .version(VERSION)
+  .option('-f, --file',  			'input file')
+  .option('-o, --out',   			'output file')
+
+// parse argument variables
+program.parse(process.argv);
+
+// grab the out file
+outFile = getArgValue('-o') || getArgValue('--out')
+
+// parse from stdin
+if (!program.file) {
+	try {
+		timer  = setTimeout(function () { program.help(); die(); }, 50);
+		stream = process.stdin.pipe(parser());
+		process.stdin.on('data', function () { clearTimeout(timer) });
+
+		// write to a file from stdin
+		if (program.out) streamToFile(stream, outFile);
+		// write to stdout
+		else stream.on('data', console.log);
+
+	}
+	catch (e) {
+		throw e
+		die("Missing input stream");
+	}
+}
+
+if (program.file) {
+	inFile = getArgValue('-f') || getArgValue('--file')
+	stream = fs.createReadStream(inFile).pipe(parser())
+	
+	// write to a file from stdin
+	if (program.out) {
+		if (!outFile) die("Invalid input file")
+		streamToFile(stream, outFile);
+	}
+	// else write to stdout
+	else stream.on('data', console.log);
+}
