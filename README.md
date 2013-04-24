@@ -45,7 +45,8 @@ Sugar for parsing a `String` of CSV.
 
 ```js
 var parsed = parse('a,b,c\n1,2,3');
-// => [['a', 'b', 'c'], ['1', '2', '3']]
+// => [ ['a', 'b', 'c'],
+//      ['1', '2', '3'] ]
 ```
 
 ## Installation
