@@ -84,7 +84,6 @@ if (!program.file) {
 
 	}
 	catch (e) {
-		throw e
 		die("Missing input stream");
 	}
 }
