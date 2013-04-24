@@ -39,6 +39,10 @@ $ node example/file.js
 
 Returns a new readable writable Stream that emits parsed CSV.
 
+### comma(string)
+
+Sugar for parsing a `String` of CSV.
+
 ## Installation
 
 With [npm](http://npmjs.org) do

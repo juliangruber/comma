@@ -2,7 +2,16 @@ var Stream = require('stream');
 
 module.exports = parse;
 
-function parse () {
+function parse (str) {
+  if (str) {
+    var p = parse();
+    var parsed = [];
+    p.on('data', function (row) { parsed.push(row); });
+    p.write(str);
+    p.end();
+    return parsed;
+  }
+
   var s = new Stream;
   s.writable = s.readable = true;
 

@@ -13,7 +13,7 @@
   },
   "dependencies" : {},
   "devDependencies" : {
-    "tap" : "*"
+    "tape" : "*"
   },
   "keywords": ["csv","parse","parser","streaming"],
   "author": {

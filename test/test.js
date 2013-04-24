@@ -1,7 +1,7 @@
 var parse = require('..');
 var test = require('tape');
 
-test('comma', function (t) {
+test('stream', function (t) {
   t.plan(3);
 
   var parser = parse();
@@ -27,3 +27,8 @@ test('comma', function (t) {
   parser.end();
 });
 
+test('sync sugar', function (t) {
+  var parsed = parse('foo,bar,baz\n1,2.5,3');
+  t.deepEqual(parsed, [['foo', 'bar', 'baz'], ['1', '2.5', '3']]);
+  t.end();
+});
