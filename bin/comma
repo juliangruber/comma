@@ -2,12 +2,11 @@
 /**
  * Dependencies
  */
-var parser  = require('..')
-var program = require('commander')
-var pkg     = require('../package')
-var fs      = require('fs')
-var JSONStream = require('JSONStream')
-var VERSION = pkg.version
+var parser  = require('..');
+var program = require('commander');
+var pkg     = require('../package');
+var fs      = require('fs');
+var VERSION = pkg.version;
 
 /**
  * Logs an optional message and exits with 
@@ -18,9 +17,8 @@ var VERSION = pkg.version
  */
 function die (message, code) {
   if (message) console.log(message);
-  process.exit(0 || code)
+  process.exit(0 || code);
 }
-
 
 /**
  * Grabs a value exactly one offset
@@ -29,10 +27,9 @@ function die (message, code) {
  * @param {String} arg
  */
 function getArgValue (arg) {
-  var i 
-  return !!~(i = program.rawArgs.indexOf(arg))? program.rawArgs[i+1] : null
+  var i;
+  return !!~(i = program.rawArgs.indexOf(arg))? program.rawArgs[i+1] : null;
 }
-
 
 /**
  * Takes a given ReadbleStream instance
@@ -44,18 +41,14 @@ function getArgValue (arg) {
  * @param {String} file
  */
 function streamToFile (stream, file) {
-  var out  = fs.createWriteStream(file)
-  stream.on('data', function (chunk) {
-    var buf = new Buffer(JSON.stringify(parser(chunk.toString())))
-    out.write(buf);
-  });
+  var out = fs.createWriteStream(file);
+  stream.on('data', function (chunk) { out.write(JSON.stringify(parser(chunk.toString()))); });
 }
 
 // programm options
-program
-  .version(VERSION)
-  .option('-f, --file',       'input file')
-  .option('-o, --out',        'output file')
+program.version(VERSION)
+  .option('-f, --file', 'input file')
+  .option('-o, --out',  'output file');
 
 // parse argument variables
 program.parse(process.argv);
@@ -68,7 +61,6 @@ if (!program.file) {
   try {
     var timer  = setTimeout(function () { program.help(); die(); }, 50);
     var stdin  = process.stdin;
-    var stream = parser()
 
     process.stdin.on('data', function () { clearTimeout(timer) });
 
@@ -88,12 +80,12 @@ if (!program.file) {
 }
 
 if (program.file) {
-  var inFile = getArgValue('-f') || getArgValue('--file')
-  var stream = fs.createReadStream(inFile)
+  var inFile = getArgValue('-f') || getArgValue('--file');
+  var stream = fs.createReadStream(inFile);
   
   // write to a file from stdin
   if (program.out) {
-    if (!outFile) die("Invalid input file")
+    if (!outFile) die("Invalid input file");
     streamToFile(stream, outFile);
   }
   // write to stdout
