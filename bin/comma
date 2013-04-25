@@ -1,34 +1,32 @@
 #!/usr/bin/env node
-/**!
-  * Dependencies
-  */
+/**
+ * Dependencies
+ */
 var parser  = require('..')
-  , net     = require('net')
-  , program = require('commander')
-  , pkg     = require('../package')
-  , fs      = require('fs')
-
-var file, stream, timer
+var program = require('commander')
+var pkg     = require('../package')
+var fs      = require('fs')
+var VERSION = pkg.version
 
 /**
-  * Logs an optiona message and exits with 
-  * an optional code defaulting to 0.
-  *
-  * @param {String} message (optional)
-  * @param {Number} code (optional) (Default 0)
-  */
+ * Logs an optiona message and exits with 
+ * an optional code defaulting to 0.
+ *
+ * @param {String} message (optional)
+ * @param {Number} code (optional) (Default 0)
+ */
 function die (message, code) {
-	message && console.log(message);
+	if (message) console.log(message);
 	process.exit(0 || code)
 }
 
 
 /**
-  * Grabs a value exactly one offset
-  * from the raw arguments
-  *
-  * @param {String} arg
-  */
+ * Grabs a value exactly one offset
+ * from the raw arguments
+ *
+ * @param {String} arg
+ */
 function getArgValue (arg) {
 	var i 
 	return !!~(i = program.rawArgs.indexOf(arg))? program.rawArgs[i+1] : null
@@ -36,14 +34,14 @@ function getArgValue (arg) {
 
 
 /**
-  * Takes a given ReadbleStream instance
-  * and creates a writeable stream with a
-  * provided file path and writes all read
-  * data to the file
-  *
-  * @param {ReadbleStream} stream
-  * @param {String} file
-  */
+ * Takes a given ReadbleStream instance
+ * and creates a writeable stream with a
+ * provided file path and writes all read
+ * data to the file
+ *
+ * @param {ReadbleStream} stream
+ * @param {String} file
+ */
 function streamToFile (stream, file) {
 	var out = fs.createWriteStream(file)
 	stream.on('data', function (chunk) {
@@ -55,9 +53,6 @@ function streamToFile (stream, file) {
 	});
 }
 
-// app version
-var VERSION = pkg.version
-
 // programm options
 program
   .version(VERSION)
@@ -68,13 +63,13 @@ program
 program.parse(process.argv);
 
 // grab the out file
-outFile = getArgValue('-o') || getArgValue('--out')
+var outFile = getArgValue('-o') || getArgValue('--out')
 
 // parse from stdin
 if (!program.file) {
 	try {
-		timer  = setTimeout(function () { program.help(); die(); }, 50);
-		stream = process.stdin.pipe(parser());
+		var timer  = setTimeout(function () { program.help(); die(); }, 50);
+		var stream = process.stdin.pipe(parser());
 		process.stdin.on('data', function () { clearTimeout(timer) });
 
 		// write to a file from stdin
@@ -89,8 +84,8 @@ if (!program.file) {
 }
 
 if (program.file) {
-	inFile = getArgValue('-f') || getArgValue('--file')
-	stream = fs.createReadStream(inFile).pipe(parser())
+	var inFile = getArgValue('-f') || getArgValue('--file')
+	var stream = fs.createReadStream(inFile).pipe(parser())
 	
 	// write to a file from stdin
 	if (program.out) {
