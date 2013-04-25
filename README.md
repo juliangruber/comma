@@ -1,4 +1,3 @@
-
 # comma
 
 A S{t,c}reaming fast CSV parser!
@@ -54,7 +53,7 @@ var parsed = parse('a,b,c\n1,2,3');
 ### Reading a CSV file from stdin
 
 ```bash
-cat ./example/some.csv | comma
+$ cat ./example/some.csv | comma
 [ 'foo', 'bar', 'baz' ]
 [ '1', '2.5', '3' ]
 ```
@@ -76,7 +75,7 @@ $ comma -f ./example/some.csv -o csv-parsed.js
 ### Reading a CSV file from stdin and redirecting output to file
 
 ```bash
-cat ./example/some.csv | comma > csv-parsed.js
+$ cat ./example/some.csv | comma > csv-parsed.js
 ```
 
 ## Installation
