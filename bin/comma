@@ -9,15 +9,15 @@ var fs      = require('fs')
 var VERSION = pkg.version
 
 /**
- * Logs an optiona message and exits with 
+ * Logs an optional message and exits with 
  * an optional code defaulting to 0.
  *
  * @param {String} message (optional)
  * @param {Number} code (optional) (Default 0)
  */
 function die (message, code) {
-	if (message) console.log(message);
-	process.exit(0 || code)
+  if (message) console.log(message);
+  process.exit(0 || code)
 }
 
 
@@ -28,8 +28,8 @@ function die (message, code) {
  * @param {String} arg
  */
 function getArgValue (arg) {
-	var i 
-	return !!~(i = program.rawArgs.indexOf(arg))? program.rawArgs[i+1] : null
+  var i 
+  return !!~(i = program.rawArgs.indexOf(arg))? program.rawArgs[i+1] : null
 }
 
 
@@ -43,21 +43,18 @@ function getArgValue (arg) {
  * @param {String} file
  */
 function streamToFile (stream, file) {
-	var out = fs.createWriteStream(file)
-	stream.on('data', function (chunk) {
-		var buf
-		buf = (typeof chunk === 'object')? new Buffer(JSON.stringify(chunk)) 
-					: new Buffer(chunk.toString())
-		
-		out.write(buf);
-	});
+  var out = fs.createWriteStream(file)
+  stream.on('data', function (chunk) {
+    var buf = (typeof chunk === 'object')? new Buffer(JSON.stringify(chunk)) : new Buffer(chunk.toString())
+    out.write(buf);
+  });
 }
 
 // programm options
 program
   .version(VERSION)
-  .option('-f, --file',  			'input file')
-  .option('-o, --out',   			'output file')
+  .option('-f, --file',       'input file')
+  .option('-o, --out',        'output file')
 
 // parse argument variables
 program.parse(process.argv);
@@ -67,31 +64,31 @@ var outFile = getArgValue('-o') || getArgValue('--out')
 
 // parse from stdin
 if (!program.file) {
-	try {
-		var timer  = setTimeout(function () { program.help(); die(); }, 50);
-		var stream = process.stdin.pipe(parser());
-		process.stdin.on('data', function () { clearTimeout(timer) });
+  try {
+    var timer  = setTimeout(function () { program.help(); die(); }, 50);
+    var stream = process.stdin.pipe(parser());
+    process.stdin.on('data', function () { clearTimeout(timer) });
 
-		// write to a file from stdin
-		if (program.out) streamToFile(stream, outFile);
-		// write to stdout
-		else stream.on('data', console.log);
+    // write to a file from stdin
+    if (program.out) streamToFile(stream, outFile);
+    // write to stdout
+    else stream.on('data', console.log);
 
-	}
-	catch (e) {
-		die("Missing input stream");
-	}
+  }
+  catch (e) {
+    die("Missing input stream");
+  }
 }
 
 if (program.file) {
-	var inFile = getArgValue('-f') || getArgValue('--file')
-	var stream = fs.createReadStream(inFile).pipe(parser())
-	
-	// write to a file from stdin
-	if (program.out) {
-		if (!outFile) die("Invalid input file")
-		streamToFile(stream, outFile);
-	}
-	// else write to stdout
-	else stream.on('data', console.log);
+  var inFile = getArgValue('-f') || getArgValue('--file')
+  var stream = fs.createReadStream(inFile).pipe(parser())
+  
+  // write to a file from stdin
+  if (program.out) {
+    if (!outFile) die("Invalid input file")
+    streamToFile(stream, outFile);
+  }
+  // else write to stdout
+  else stream.on('data', console.log);
 }
