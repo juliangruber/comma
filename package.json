@@ -9,9 +9,16 @@
   "homepage": "https://github.com/juliangruber/comma",
   "main" : "index.js",
   "scripts" : {
-    "test" : "tape test/*.js"
+    "test" : "tape test/*.js",
+    "test-cli" : "sh ./test/cli.sh"
   },
-  "dependencies" : {},
+  "bin" : {
+    "comma" : "./bin/comma",
+    "commaparse" : "./bin/comma"
+  },
+  "dependencies" : {
+    "commander" : "1.x.x"
+  },
   "devDependencies" : {
     "tape" : "*"
   },

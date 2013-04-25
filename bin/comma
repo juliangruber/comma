@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+/**
+ * Dependencies
+ */
+var parser  = require('..');
+var program = require('commander');
+var pkg     = require('../package');
+var fs      = require('fs');
+var VERSION = pkg.version;
+
+/**
+ * Logs an optional message and exits with 
+ * an optional code defaulting to 0.
+ *
+ * @param {String} message (optional)
+ * @param {Number} code (optional) (Default 0)
+ */
+function die (message, code) {
+  if (message) console.log(message);
+  process.exit(0 || code);
+}
+
+/**
+ * Grabs a value exactly one offset
+ * from the raw arguments
+ *
+ * @param {String} arg
+ */
+function getArgValue (arg) {
+  var i;
+  return !!~(i = program.rawArgs.indexOf(arg))? program.rawArgs[i+1] : null;
+}
+
+/**
+ * Takes a given ReadbleStream instance
+ * and creates a writeable stream with a
+ * provided file path and writes all read
+ * data to the file
+ *
+ * @param {ReadbleStream} stream
+ * @param {String} file
+ */
+function streamToFile (stream, file) {
+  var out = fs.createWriteStream(file);
+  stream.on('data', function (chunk) { out.write(JSON.stringify(parser(chunk.toString()))); });
+}
+
+// programm options
+program.version(VERSION)
+  .option('-f, --file', 'input file')
+  .option('-o, --out',  'output file');
+
+// parse argument variables
+program.parse(process.argv);
+
+// grab the out file
+var outFile = getArgValue('-o') || getArgValue('--out')
+
+// parse from stdin
+if (!program.file) {
+  try {
+    var timer  = setTimeout(function () { program.help(); die(); }, 50);
+    var stdin  = process.stdin;
+
+    process.stdin.on('data', function () { clearTimeout(timer) });
+
+    // write to a file from stdin
+    if (program.out) {
+      streamToFile(stdin, outFile);
+    }
+    // write to stdout
+    else {
+      stdin.on('data', function (chunk) { console.log(parser(chunk)); });
+    }
+
+  }
+  catch (e) {
+    die("Missing input stream");
+  }
+}
+
+if (program.file) {
+  var inFile = getArgValue('-f') || getArgValue('--file');
+  var stream = fs.createReadStream(inFile);
+  
+  // write to a file from stdin
+  if (program.out) {
+    if (!outFile) die("Invalid input file");
+    streamToFile(stream, outFile);
+  }
+  // write to stdout
+  else {
+    stream.on('data', function (chunk) { console.log(parser(chunk)); });
+  }
+}
