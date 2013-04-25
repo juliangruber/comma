@@ -49,6 +49,36 @@ var parsed = parse('a,b,c\n1,2,3');
 //      ['1', '2', '3'] ]
 ```
 
+## Command line
+
+### Reading a CSV file from stdin
+
+```bash
+cat ./example/some.csv | comma
+[ 'foo', 'bar', 'baz' ]
+[ '1', '2.5', '3' ]
+```
+
+### Reading a CSV file from a given path
+
+```bash
+$ comma -f ./example/some.csv
+[ 'foo', 'bar', 'baz' ]
+[ '1', '2.5', '3' ]
+```
+
+### Reading from a CSV and outputing to file
+
+```bash
+$ comma -f ./example/some.csv -o csv-parsed.js
+```
+
+### Reading a CSV file from stdin and redirecting output to file
+
+```bash
+cat ./example/some.csv | comma > csv-parsed.js
+```
+
 ## Installation
 
 With [npm](http://npmjs.org) do
@@ -56,6 +86,12 @@ With [npm](http://npmjs.org) do
 ```bash
 $ npm install comma
 ```
+
+To have access to the command line executable do
+```bash
+$ [sudo] npm install -g comma
+```
+
 ## License
 
 (MIT)
