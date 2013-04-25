@@ -6,6 +6,7 @@ var parser  = require('..')
 var program = require('commander')
 var pkg     = require('../package')
 var fs      = require('fs')
+var JSONStream = require('JSONStream')
 var VERSION = pkg.version
 
 /**
@@ -43,9 +44,9 @@ function getArgValue (arg) {
  * @param {String} file
  */
 function streamToFile (stream, file) {
-  var out = fs.createWriteStream(file)
+  var out  = fs.createWriteStream(file)
   stream.on('data', function (chunk) {
-    var buf = (typeof chunk === 'object')? new Buffer(JSON.stringify(chunk)) : new Buffer(chunk.toString())
+    var buf = new Buffer(JSON.stringify(parser(chunk.toString())))
     out.write(buf);
   });
 }
@@ -66,13 +67,19 @@ var outFile = getArgValue('-o') || getArgValue('--out')
 if (!program.file) {
   try {
     var timer  = setTimeout(function () { program.help(); die(); }, 50);
-    var stream = process.stdin.pipe(parser());
+    var stdin  = process.stdin;
+    var stream = parser()
+
     process.stdin.on('data', function () { clearTimeout(timer) });
 
     // write to a file from stdin
-    if (program.out) streamToFile(stream, outFile);
+    if (program.out) {
+      streamToFile(stdin, outFile);
+    }
     // write to stdout
-    else stream.on('data', console.log);
+    else {
+      stdin.on('data', function (chunk) { console.log(parser(chunk)); });
+    }
 
   }
   catch (e) {
@@ -82,13 +89,15 @@ if (!program.file) {
 
 if (program.file) {
   var inFile = getArgValue('-f') || getArgValue('--file')
-  var stream = fs.createReadStream(inFile).pipe(parser())
+  var stream = fs.createReadStream(inFile)
   
   // write to a file from stdin
   if (program.out) {
     if (!outFile) die("Invalid input file")
     streamToFile(stream, outFile);
   }
-  // else write to stdout
-  else stream.on('data', console.log);
+  // write to stdout
+  else {
+    stream.on('data', function (chunk) { console.log(parser(chunk)); });
+  }
 }

@@ -55,28 +55,30 @@ var parsed = parse('a,b,c\n1,2,3');
 
 ```bash
 cat ./example/some.csv | comma
-[ 'foo', 'bar', 'baz' ]
-[ '1', '2.5', '3' ]
+[ [ 'foo', 'bar', 'baz' ], [ '1', '2.5', '3' ] ]
 ```
 
 ### Reading a CSV file from a given path
 
 ```bash
 $ comma -f ./example/some.csv
-[ 'foo', 'bar', 'baz' ]
-[ '1', '2.5', '3' ]
+[ [ 'foo', 'bar', 'baz' ], [ '1', '2.5', '3' ] ]
 ```
 
 ### Reading from a CSV and outputing to file
 
 ```bash
-$ comma -f ./example/some.csv -o csv-parsed.js
+$ comma -f ./example/some.csv -o csv-parsed.json
+$ cat ./csv-parsed.json
+[ [ 'foo', 'bar', 'baz' ], [ '1', '2.5', '3' ] ]
 ```
 
 ### Reading a CSV file from stdin and redirecting output to file
 
 ```bash
-cat ./example/some.csv | comma > csv-parsed.js
+cat ./example/some.csv | comma > csv-parsed.json
+$ cat ./csv-parsed.json
+[ [ 'foo', 'bar', 'baz' ], [ '1', '2.5', '3' ] ]
 ```
 
 ## Installation

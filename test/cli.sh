@@ -1,6 +1,6 @@
 comma=../bin/comma
 csvFile=`pwd`/example/some.csv
-outFile=`pwd`/out
+outFile=`pwd`/out.json
 
 echo "Reading CSV file '${csvFile}' from stdin"
 #echo "cat ${csvFile} | comma"
