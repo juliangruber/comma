@@ -42,7 +42,7 @@ function getArgValue (arg) {
  */
 function streamToFile (stream, file) {
   var out = fs.createWriteStream(file);
-  var pstream = parser();
+  var pstream = parser(parseropts);
   var parsed = [];
 
   pstream.on('data', function (chunk) { parsed.push(chunk); });
@@ -53,11 +53,16 @@ function streamToFile (stream, file) {
 
 // programm options
 program.version(VERSION)
-  .option('-f, --file', 'input file')
-  .option('-o, --out',  'output file');
+  .option('-N, --noescape', 'prevent escaping (faster)')
+  .option('-f, --file',      'input file')
+  .option('-o, --out',       'output file');
 
 // parse argument variables
 program.parse(process.argv);
+
+var parseropts = {
+  escape : program['noescape']? false : true
+};
 
 // grab the out file
 var outFile = getArgValue('-o') || getArgValue('--out')
@@ -76,7 +81,7 @@ if (!program.file) {
     }
     // write to stdout
     else {
-      var pstream = parser();
+      var pstream = parser(parseropts);
       var parsed = [];
       pstream.on('data', function (chunk) { parsed.push(chunk); });
       stdin.on('data', pstream.write.bind(pstream));
@@ -101,6 +106,6 @@ if (program.file) {
   }
   // write to stdout
   else {
-    stream.on('data', function (chunk) { console.log(parser(chunk)); });
+    stream.on('data', function (chunk) { console.log(parser(chunk, parseropts)); });
   }
 }

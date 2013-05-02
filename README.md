@@ -51,6 +51,19 @@ var parsed = parse('a,b,c\n1,2,3');
 
 ## Command line
 
+### Usage
+```bash
+Usage: comma [options]
+
+  Options:
+
+    -h, --help      output usage information
+    -V, --version   output the version number
+    -N, --noescape  prevent escaping (faster)
+    -f, --file      input file
+    -o, --out       output file
+```
+
 ### Reading a CSV file from stdin
 
 ```bash
