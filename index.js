@@ -18,12 +18,12 @@ function readLineToArray (line) {
  */
 function parse (str, options) {
   // ensure options is an object
-  options = (typeof str === 'object')? str : options;
+  options = (typeof str === 'object' && !Buffer.isBuffer(str))? str : options;
   options = (typeof options === 'object')? options : {};
-  str     = (typeof str === 'string')? str : null;
+  str     = (typeof str === 'string' || Buffer.isBuffer(str))? str : null;
 
   if (str) {
-    var p = parse();
+    var p = parse(options);
     var parsed = [];
     p.on('data', function (row) { parsed.push(row); });
     p.write(str);

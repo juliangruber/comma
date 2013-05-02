@@ -102,10 +102,12 @@ if (program.file) {
   // write to a file from stdin
   if (program.out) {
     if (!outFile) die("Invalid input file");
-    streamToFile(stream, outFile);
+    else streamToFile(stream, outFile);
   }
   // write to stdout
   else {
-    stream.on('data', function (chunk) { console.log(parser(chunk, parseropts)); });
+    stream.on('data', function (chunk) {
+      console.log(parser(chunk, parseropts));
+    });
   }
 }
