@@ -2,6 +2,13 @@ var Stream = require('stream');
 
 module.exports = parse;
 
+function readLineToArray (line) {
+  var matches = line.match(/(["|'].*?["|']|[^",\s|^',\s]+)(?=\s*,|\s*$)/g);
+  return matches.map(function (item) { 
+    return item.replace(/^['|"]/g,'').replace(/['|"]$/g,'').replace(/[\\]+/g,'');
+  });
+}
+
 function parse (str) {
   if (str) {
     var p = parse();
@@ -30,7 +37,10 @@ function parse (str) {
     lineBuf = lines.pop();
 
     for (var i = 0; i < lines.length; i++) {
-      s.emit('data', lines[i].split(','));
+      if (!lines[i]) continue;
+      var line  = lines[i];
+      var parts = readLineToArray(line);
+      s.emit('data', parts);
     }
   }
 
@@ -50,7 +60,7 @@ function parse (str) {
 
   s.end = function () {
     if (lineBuf) {
-      s.emit('data', lineBuf.split(','));
+      s.emit('data', readLineToArray(lineBuf));
     }
 
     s.writable = false;
