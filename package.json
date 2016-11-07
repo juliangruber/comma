@@ -17,7 +17,7 @@
     "commaparse" : "./bin/comma"
   },
   "dependencies" : {
-    "commander" : "1.x.x"
+    "commander" : "^2.9.0"
   },
   "devDependencies" : {
     "tape" : "*"
