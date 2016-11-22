@@ -20,7 +20,7 @@
     "commander" : "^2.9.0"
   },
   "devDependencies" : {
-    "tape" : "*"
+    "tape" : ">=4.6.3"
   },
   "keywords": ["csv","parse","parser","streaming"],
   "author": {
