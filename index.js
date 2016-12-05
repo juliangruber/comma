@@ -2,9 +2,28 @@ var Stream = require('stream');
 
 module.exports = parse;
 
-function parse (str) {
+function readLineToArray (line) {
+  var matches = line.match(/(["|'].*?["|']|[^",\s|^',\s]+)(?=\s*,|\s*$)/g);
+  return matches.map(function (item) { 
+    return item.replace(/^['|"]/g,'').replace(/['|"]$/g,'').replace(/[\\]+/g,'');
+  });
+}
+
+/**
+ * Returns a new readable writable Stream that emits parsed CSV or
+ * a parsed CSV string if a string is provided
+ *
+ * @param {String} str
+ * @param {Object} options
+ */
+function parse (str, options) {
+  // ensure options is an object
+  options = (typeof str === 'object' && !Buffer.isBuffer(str))? str : options;
+  options = (typeof options === 'object')? options : {};
+  str     = (typeof str === 'string' || Buffer.isBuffer(str))? str : null;
+
   if (str) {
-    var p = parse();
+    var p = parse(options);
     var parsed = [];
     p.on('data', function (row) { parsed.push(row); });
     p.write(str);
@@ -30,7 +49,10 @@ function parse (str) {
     lineBuf = lines.pop();
 
     for (var i = 0; i < lines.length; i++) {
-      s.emit('data', lines[i].split(','));
+      if (!lines[i]) continue;
+      var line  = lines[i];
+      var parts = (options.escape === false)? lines[i].split(',') : readLineToArray(line);
+      s.emit('data', parts);
     }
   }
 
@@ -50,7 +72,8 @@ function parse (str) {
 
   s.end = function () {
     if (lineBuf) {
-      s.emit('data', lineBuf.split(','));
+      if (options.escape === false) s.emit('data', lineBuf.split(','));
+      else s.emit('data', readLineToArray(lineBuf));
     }
 
     s.writable = false;

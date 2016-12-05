@@ -1,2 +1,4 @@
 foo,bar,baz
 1,2.5,3
+"a,b",c,d
+foo,"\"bar"

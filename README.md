@@ -39,7 +39,7 @@ $ node example/file.js
 
 Returns a new readable writable Stream that emits parsed CSV.
 
-### comma(string)
+### comma(string, [options])
 
 Sugar for parsing a `String` of CSV.
 
@@ -49,7 +49,40 @@ var parsed = parse('a,b,c\n1,2,3');
 //      ['1', '2', '3'] ]
 ```
 
+### comma(options)
+
+You can pass an object with options to configure how `comma` parses your CSV. An options object can have only a single 
+property, `escape`.
+
+  * `escape` Set to false to prevent escaping. (Default: true)
+
+```js
+comma('a,b,c\n1,2,3\n"\"foo"');
+// [ [ 'a', 'b', 'c' ],
+//   [ '1', '2', '3' ],
+//   [ '"foo' ] ]
+
+comma('a,b,c\n1,2,3\n"\"foo"', {escape: false});
+// [ [ 'a', 'b', 'c' ],
+//   [ '1', '2', '3' ],
+//   [ '""foo"' ] ]
+```
+
 ## Command line
+
+### Usage
+
+```bash
+Usage: comma [options]
+
+  Options:
+
+    -h, --help      output usage information
+    -V, --version   output the version number
+    -N, --noescape  prevent escaping (faster)
+    -f, --file      input file
+    -o, --out       output file
+```
 
 ### Reading a CSV file from stdin
 
@@ -90,6 +123,7 @@ $ npm install comma
 ```
 
 To have access to the command line executable do
+
 ```bash
 $ [sudo] npm install -g comma
 ```
